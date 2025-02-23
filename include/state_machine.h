@@ -3,14 +3,11 @@
 
 #include <Arduino.h>
 #include "const.h"
+#include "digitalStuff.h"
+#include "analogStuff.h"
 
-
-// State machine states
-typedef enum {
-    IDLE,
-    SOH_READING,
-    CONST_CURR,
-    CONST_VOLT,
-};
+void initStateMachine();
+state_t getStateMachineState();
+void stateMachine();
 
 #endif

@@ -37,4 +37,18 @@
 /////////////////////
 #define VOLT_THRES 4.2
 
+
+///////////////////////
+// State machine stuff
+///////////////////////
+// State machine states
+typedef enum {
+    IDLE = 0,
+    SOH_READING = 1,
+    CONST_CURR = 2,
+    CONST_VOLT = 3,
+} state_t;
+
+extern volatile state_t state;
+
 #endif
