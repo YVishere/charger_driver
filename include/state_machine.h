@@ -5,6 +5,7 @@
 #include "const.h"
 #include "digitalStuff.h"
 #include "analogStuff.h"
+#include "calculation.h"
 
 void initStateMachine();
 state_t getStateMachineState();

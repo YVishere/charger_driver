@@ -17,15 +17,15 @@ void stateMachine() {
     switch (state) {
         case SOH_READING:
             //read the state of health
-            break;
+        break;
         case CONST_CURR:
             //constant current mode
-            break;
+        break;
         case CONST_VOLT:
             //constant voltage mode
-            break;
+        break;
         default:
             //IDLE state
-            break;
+        break;
     }
 }
