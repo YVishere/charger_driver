@@ -23,14 +23,14 @@
 #define SCLK        PB_3
 
 //Analog Pins
-#define A0          ADC_CHANNEL_0
-#define A1          ADC_CHANNEL_1
-#define A2          ADC_CHANNEL_3
-#define A3          ADC_CHANNEL_4
-#define A4          ADC_CHANNEL_5
-#define A5          ADC_CHANNEL_6
-#define A6          ADC_CHANNEL_7
-#define A7          ADC_CHANNEL_2
+#define A0          ADC_CHANNEL_5
+#define A1          ADC_CHANNEL_6
+#define A2          ADC_CHANNEL_8
+#define A3          ADC_CHANNEL_9
+#define A4          ADC_CHANNEL_10
+#define A5          ADC_CHANNEL_11
+#define A6          ADC_CHANNEL_12
+#define A7          ADC_CHANNEL_7
 
 /////////////////////
 //Macros for values
