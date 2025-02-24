@@ -35,8 +35,9 @@
 /////////////////////
 //Macros for values
 /////////////////////
-#define VOLT_THRES 4.2
-
+#define VOLT_THRES          4.2
+#define R_TAP               257-1     //We dont want RB to be 0 --> inf Voltage
+#define MAX_DIGI_POT_RES    10e3
 
 ///////////////////////
 // State machine stuff

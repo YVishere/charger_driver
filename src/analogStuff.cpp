@@ -7,7 +7,7 @@ void initAnalog() {
 float readVoltage(uint8_t channel) {
   //read the voltage from the ADC
 
-  //To-do: raw ADC is in [0, 1]. Convert to voltage
-  float voltage = readADC(channel);
+  //raw ADC is in [0, 1]. Converted to voltage since it takes in 3.3V and outputs 4096 values
+  float voltage = readADC(channel) * 3.3 / 4096;
   return voltage;
 }

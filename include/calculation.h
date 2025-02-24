@@ -2,6 +2,7 @@
 #define __CALCULATION_H
 
 #include "math.h"
+#include "const.h"
 
 //constants
 #define R_CURR_CALC     0.1
