@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include "const.h"
 
-#define MHZ_1000        1e9
+#define MHZ_10        1e7
 /**
  * CMDERR will be driven low if the command is invalid 
  * To exit the error condition, the user must take the CS pin to the VIH level.

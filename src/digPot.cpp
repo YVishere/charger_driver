@@ -16,7 +16,7 @@ void resetWiper2();
 void resetWiper3();
 
 //DigiPot supports mode 0,0 and 1,1
-SPISettings settings(MHZ_1000, MSBFIRST, SPI_MODE0);
+SPISettings settings(MHZ_10, MSBFIRST, SPI_MODE0);
 
 //DATA_send[7:0] --> data byte, DATA_send[15:8] --> command byte
 //Send data --> DATA_rec = SPI.transfer(DATA_send)
