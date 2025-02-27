@@ -6,6 +6,7 @@
 #include "digitalStuff.h"
 #include "analogStuff.h"
 #include "calculation.h"
+#include "digiPot.h"
 
 void initStateMachine();
 state_t getStateMachineState();

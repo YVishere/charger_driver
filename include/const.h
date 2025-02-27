@@ -35,21 +35,41 @@
 /////////////////////
 //Macros for values
 /////////////////////
-#define VOLT_THRES          4.2
+#define VOLT_THRES          4.15
 #define R_TAP               257-1     //We dont want RB to be 0 --> inf Voltage
-#define MAX_DIGI_POT_RES    10e3
+#define MAX_DIGI_POT_RES    5e3
 
 ///////////////////////
 // State machine stuff
 ///////////////////////
+
+//Settings
+typedef enum{
+    S_4 = 3,
+    S_3 = 2,
+    S_2 = 1
+} settings_t;
+
+extern volatile settings_t settings;
+
 // State machine states
 typedef enum {
     IDLE = 0,
-    SOH_READING = 1,
+    VOC_MEASURE = 1,
     CONST_CURR = 2,
     CONST_VOLT = 3,
 } state_t;
 
 extern volatile state_t state;
+
+///////////
+// Events
+///////////
+typedef struct {
+    bool state_change: 1;
+    bool got_soh: 1;
+} events_t;
+
+extern volatile events_t events;
 
 #endif

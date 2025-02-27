@@ -16,4 +16,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  delay(500);
+  Serial.printf("Current State: %d\n", getStateMachineState()); 
 }
