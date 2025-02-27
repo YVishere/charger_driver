@@ -109,6 +109,18 @@ void stateMachine() {
         case CONST_VOLT_1S:
             //constant voltage mode
         break;
+        case CONST_VOLT_2S:
+            //constant voltage mode
+        break;
+        case CONST_VOLT_3S:
+            //constant voltage mode
+        break;
+        case CONST_VOLT_4S:
+            //constant voltage mode
+        break;
+        case CHARGED:
+            //Verify if the battery is actually charged
+        break;
         default:
             //IDLE state
             //Round Robin A2D converting on pins closer to battery
