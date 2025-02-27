@@ -27,18 +27,23 @@ typedef enum{
     WIPER0_WRITE = 0x00,
     WIPER1_WRITE = 0x10,
     WIPER2_WRITE = 0x60,
-    WIPER3_WRITE = 0x70
+    WIPER3_WRITE = 0x70,
+    ERROR_WRITE = 0xFF
 } WiperWriteCommand;
 
 typedef enum {
     WIPER0_READ = 0x0C,
     WIPER1_READ = 0x1C,
     WIPER2_READ = 0x6C,
-    WIPER3_READ = 0x7C
+    WIPER3_READ = 0x7C,
+    ERROR_READ = 0xFE
 } WiperReadCommand;
 
 void initDigPot();
 uint8_t getWiper(WiperReadCommand wiper);
 uint8_t setWiper(WiperWriteCommand wiper, uint8_t value);
+
+uint8_t dec_wiper(int index);
+uint8_t inc_wiper(int index);
 
 #endif

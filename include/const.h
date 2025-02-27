@@ -35,7 +35,8 @@
 /////////////////////
 //Macros for values
 /////////////////////
-#define VOLT_THRES          4.15
+#define VOLT_DIFF_THRESH    4.15
+#define VOLT_THRES          0.01
 #define R_TAP               257-1     //We dont want RB to be 0 --> inf Voltage
 #define MAX_DIGI_POT_RES    5e3
 
@@ -57,7 +58,11 @@ typedef enum {
     IDLE = 0,
     VOC_MEASURE = 1,
     CONST_CURR = 2,
-    CONST_VOLT = 3,
+    CONST_VOLT_1S = 3,
+    CONST_VOLT_2S = 4,
+    CONST_VOLT_3S = 5,
+    CONST_VOLT_4S = 6,
+    CHARGED = 7
 } state_t;
 
 extern volatile state_t state;
@@ -67,7 +72,8 @@ extern volatile state_t state;
 ///////////
 typedef struct {
     bool state_change: 1;
-    bool got_soh: 1;
+    bool error:1;
+    bool faulty_batt:1;
 } events_t;
 
 extern volatile events_t events;

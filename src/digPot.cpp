@@ -82,6 +82,70 @@ uint8_t setWiper(WiperWriteCommand wiper, uint8_t value) {
     return 1;
 }
 
+uint8_t dec_wiper(int index) {
+    if (index < 0 || index > 3) {
+        // Invalid index
+        return 0;
+    }
+
+    uint8_t wiper = getWiper(index_to_readWiper(index));
+    
+    if (wiper != 0){
+        setWiper(index_to_writeWiper(index), wiper - 1);
+        return wiper - 1;
+    }
+
+    return 0;
+}
+
+uint8_t inc_wiper(int index) {
+    if (index < 0 || index > 3) {
+        // Invalid index
+        return 0;
+    }
+
+    uint8_t wiper = getWiper(index_to_readWiper(index));
+    
+    if (wiper != 0){
+        setWiper(index_to_writeWiper(index), wiper + 1);
+        return wiper + 1;
+    }
+
+    return 0;
+}
+
+WiperReadCommand index_to_readWiper(int index) {
+    switch (index) {
+        case 3:
+            return WIPER3_READ;
+        case 2:
+            return WIPER2_READ;
+        case 1:
+            return WIPER1_READ;
+        case 0:
+            return WIPER0_READ;
+        default:
+            // Invalid index
+            return ERROR_READ;
+    }
+}
+
+WiperWriteCommand index_to_writeWiper(int index) {
+    switch (index) {
+        case 3:
+            return WIPER3_WRITE;
+        case 2:
+            return WIPER2_WRITE;
+        case 1:
+            return WIPER1_WRITE;
+        case 0:
+            return WIPER0_WRITE;
+        default:
+            // Invalid index
+            return ERROR_WRITE;
+    }
+}
+
 void resetWiper0() {
     setWiper(WIPER0_WRITE, 0x00);
 }
