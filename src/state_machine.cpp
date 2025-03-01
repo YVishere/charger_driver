@@ -32,6 +32,8 @@ state_t getStateMachineState() {
 void stateMachine() {
     static bool first = true;
     switch (state) {
+        case VERIFY_SETTINGS:
+        break;
         case VOC_MEASURE:
             // Measure and store away each cell voltage
             // Leave state when done.
@@ -124,19 +126,19 @@ void stateMachine() {
         default:
             //IDLE state
             //Round Robin A2D converting on pins closer to battery
-            if (readVoltage(V_16_HS) > VOLT_THRES) {
-                state = VOC_MEASURE;
-                settings = S_4;
+            if (readVoltage(V_8_HS) > VOLT_THRES) {
+                state = VERIFY_SETTINGS;
+                settings = S_2;
                 events.state_change = 1;
             }
             else if (readVoltage(V_12_HS) > VOLT_THRES) {
-                state = VOC_MEASURE;
+                state = VERIFY_SETTINGS;
                 settings = S_3;
                 events.state_change = 1;
             }
-            else if (readVoltage(V_8_HS) > VOLT_THRES) {
-                state = VOC_MEASURE;
-                settings = S_2;
+            else if (readVoltage(V_16_HS) > VOLT_THRES) {
+                state = VERIFY_SETTINGS;
+                settings = S_4;
                 events.state_change = 1;
             }
         break;
