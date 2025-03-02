@@ -7,6 +7,7 @@
 #include "analogStuff.h"
 #include "calculation.h"
 #include "digiPot.h"
+#include "STM32TimerInterrupt_Generic.h"
 
 void initStateMachine();
 state_t getStateMachineState();

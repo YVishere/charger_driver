@@ -16,6 +16,13 @@ volatile float cell_voltage_OC[4] = {0, 0, 0, 0};
 volatile float cell_voltage_UL[4] = {0, 0, 0, 0};
 volatile float max_vol_reading__soh = -1;
 
+//SOH and SOC var
+volatile float soh = -1;
+volatile float soc = -1;
+
+//Timer
+STM32TimerInterrupt SOCTimer(TIM7);
+
 void initStateMachine() {
     //initialize digital pins
     initDigital();
@@ -23,6 +30,25 @@ void initStateMachine() {
     initAnalog();
     //initialize digipot
     initDigPot();
+
+    //initialize timer
+    if (SOCTimer.attachInterrupt(100,handle_stateOfCharge)){
+        printf("Timer attached\n");
+    }
+    else{
+        printf("Timer not attached\n");
+    }
+}
+
+void handle_stateOfCharge(){
+    //Calculate state of charge of the battery pack based on how close the current output for the entire battery is to 0
+    float sum = 0;
+    for (int i = settings; i >= 0; i--) {
+        float current = -calculateCurrent(readUndividedVoltage(pin_volt_HS[i]), readUndividedVoltage(pin_volt_LS[i]));
+        sum += current;
+    }
+
+    soc = sum*100/MAX_CURRENT;
 }
 
 state_t getStateMachineState() {
@@ -172,7 +198,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 4.2){
+            if (out_vol > 8.4){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{
@@ -202,7 +228,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 4.2){
+            if (out_vol > 12.6){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{
@@ -232,7 +258,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 4.2){
+            if (out_vol > 16.8){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{

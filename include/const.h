@@ -39,6 +39,7 @@
 #define VOLT_THRES          0.01
 #define R_TAP               257-1     //We dont want RB to be 0 --> inf Voltage
 #define MAX_DIGI_POT_RES    5e3
+#define MAX_CURRENT         2
 
 ///////////////////////
 // State machine stuff
