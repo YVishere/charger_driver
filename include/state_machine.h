@@ -13,4 +13,7 @@ void initStateMachine();
 state_t getStateMachineState();
 void stateMachine();
 
+extern volatile float soh;
+extern volatile float soc;
+
 #endif
