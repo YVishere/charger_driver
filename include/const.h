@@ -9,9 +9,6 @@
 
 //Digital Pins
 
-#define UART_RX     PA_9
-#define UART_TX     PA_10
-
 #define EN0         PA_12
 #define EN1         PB_0
 #define EN2         PC_14
@@ -52,7 +49,7 @@ typedef enum{
     S_2 = 1
 } settings_t;
 
-extern volatile settings_t settings;
+extern volatile settings_t settings_fmware;
 
 // State machine states
 
@@ -67,7 +64,7 @@ typedef enum {
     CONST_VOLT_3S = 6,
     CONST_VOLT_4S = 7,
     CHARGED = 8,
-    ERROR = 9
+    ERROR_BATT = 9,
 } state_t;
 
 extern volatile state_t state;

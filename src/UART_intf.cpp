@@ -1,8 +1,12 @@
 #include "UART_intf.h"
 
 void initUART() {
+    //Just in case since USART1 is possible on multiple pins
+    Serial1.setTx(PA_9);
+    Serial1.setRx(PA_10);
+
     //Serial1 since I am using USART1
-    Serial1.begin(115200);
+    Serial1.begin(9600);
 }
 
 void readUART(){

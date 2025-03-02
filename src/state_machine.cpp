@@ -2,7 +2,7 @@
 
 volatile state_t state = IDLE;
 volatile events_t events = {0,0};
-volatile settings_t settings = S_4;
+volatile settings_t settings_fmware = S_4;
 
 //Hashing pins for cell voltage calculation
 volatile float pin_volt_HS[4] = {V_4_HS, V_8_HS, V_12_HS, V_16_HS};
@@ -19,6 +19,16 @@ volatile float max_vol_reading__soh = -1;
 //SOH and SOC var
 volatile float soh = -1;
 volatile float soc = -1;
+
+//var
+float out_vol;
+float in_vol;
+float curr;
+
+//function declaration
+void handle_stateOfCharge();
+void soh_calc();
+void enableTopMost();
 
 //Timer
 STM32TimerInterrupt SOCTimer(TIM7);
@@ -43,7 +53,7 @@ void initStateMachine() {
 void handle_stateOfCharge(){
     //Calculate state of charge of the battery pack based on how close the current output for the entire battery is to 0
     float sum = 0;
-    for (int i = settings; i >= 0; i--) {
+    for (int i = settings_fmware; i >= 0; i--) {
         float current = -calculateCurrent(readUndividedVoltage(pin_volt_HS[i]), readUndividedVoltage(pin_volt_LS[i]));
         sum += current;
     }
@@ -62,24 +72,24 @@ void stateMachine() {
             //Round Robin A2D converting on pins closer to battery
             if (readVoltage(V_8_HS) > VOLT_THRES) {
                 state = VOC_MEASURE;
-                settings = S_2;
+                settings_fmware = S_2;
                 events.state_change = 1;
             }
             else if (readVoltage(V_12_HS) > VOLT_THRES) {
                 state = VOC_MEASURE;
-                settings = S_3;
+                settings_fmware = S_3;
                 events.state_change = 1;
             }
             else if (readVoltage(V_16_HS) > VOLT_THRES) {
                 state = VOC_MEASURE;
-                settings = S_4;
+                settings_fmware = S_4;
                 events.state_change = 1;
             }
         break;
         case VOC_MEASURE:
             // Measure and store away each cell voltage
             // Leave state when done.
-            for (int i = settings; i >= 0; i--) {
+            for (int i = settings_fmware; i >= 0; i--) {
                 cell_voltage_OC[i] = readUndividedVoltage(pin_volt_HS[i]);
             }
 
@@ -93,7 +103,7 @@ void stateMachine() {
             //constant current mode
 
             //measure on outside of resistor)
-            for (int i = settings; i >= 0; i--) {
+            for (int i = settings_fmware; i >= 0; i--) {
                 cell_voltage_UL[i] = readUndividedVoltage(pin_volt_HS[i]);
             }
 
@@ -104,11 +114,11 @@ void stateMachine() {
             }
 
             //calculate current
-            for (int i = settings; i >= 0; i--) {
+            for (int i = settings_fmware; i >= 0; i--) {
                 curr_across[i] = -calculateCurrent(readUndividedVoltage(pin_volt_HS[i]), readUndividedVoltage(pin_volt_LS[i]));
             }
 
-            for (int i = settings; i >= 0; i--) {
+            for (int i = settings_fmware; i >= 0; i--) {
                 if (curr_across[i] < 2){
                     uint8_t resp = inc_wiper(i);
                     if (!resp){
@@ -133,7 +143,7 @@ void stateMachine() {
 
             //Check if we can move on to constant voltage
             int diff;
-            for (int i = settings; i >= 0; i--){
+            for (int i = settings_fmware; i >= 0; i--){
                 if (i == 0){
                     diff = cell_voltage_UL[i];
                 }
@@ -154,16 +164,16 @@ void stateMachine() {
             //constant voltage mode
 
             //measure on outside of resistor
-            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
             //measure on inside of resistor
-            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+            in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
 
             //calculate current
-            float curr = calculateCurrent(in_vol, out_vol);
+            curr = calculateCurrent(in_vol, out_vol);
 
             if (curr > 2){
                 //Faulty battery
-                state = ERROR;
+                state = ERROR_BATT;
                 events.state_change = 1;
                 events.error = 1;
             }
@@ -184,16 +194,16 @@ void stateMachine() {
             //constant voltage mode
 
             //measure on outside of resistor
-            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
             //measure on inside of resistor
-            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+            in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
 
             //calculate current
-            float curr = calculateCurrent(in_vol, out_vol);
+            curr = calculateCurrent(in_vol, out_vol);
 
             if (curr > 2){
                 //Faulty battery
-                state = ERROR;
+                state = ERROR_BATT;
                 events.state_change = 1;
                 events.error = 1;
             }
@@ -213,17 +223,14 @@ void stateMachine() {
         case CONST_VOLT_3S:
             //constant voltage mode
 
-            //measure on outside of resistor
-            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
-            //measure on inside of resistor
-            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+            out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
 
-            //calculate current
-            float curr = calculateCurrent(in_vol, out_vol);
+            curr = calculateCurrent(in_vol, out_vol);
 
             if (curr > 2){
                 //Faulty battery
-                state = ERROR;
+                state = ERROR_BATT;
                 events.state_change = 1;
                 events.error = 1;
             }
@@ -244,16 +251,16 @@ void stateMachine() {
             //constant voltage mode
 
             //measure on outside of resistor
-            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
             //measure on inside of resistor
-            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+            in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
 
             //calculate current
-            float curr = calculateCurrent(in_vol, out_vol);
+            curr = calculateCurrent(in_vol, out_vol);
 
             if (curr > 2){
                 //Faulty battery
-                state = ERROR;
+                state = ERROR_BATT;
                 events.state_change = 1;
                 events.error = 1;
             }
@@ -276,7 +283,7 @@ void stateMachine() {
             //If charged, last state
             //If not, go back to constant voltage 1S
 
-            for (int i = settings; i >= 0; i--) {
+            for (int i = settings_fmware; i >= 0; i--) {
                 float out_vol = readUndividedVoltage(pin_volt_HS[i]);
                 float in_vol = readUndividedVoltage(pin_volt_LS[i]);
                 float curr = calculateCurrent(in_vol, out_vol);
@@ -288,7 +295,7 @@ void stateMachine() {
                 }
             }
         break;
-        case ERROR:
+        case ERROR_BATT:
             //Error state
             events.faulty_batt = 1;
         break;
@@ -324,25 +331,25 @@ int argMin(float *arr, int size){
 }
 
 void enableTopMost(){
-    if (settings == S_4) {
+    if (settings_fmware == S_4) {
         enable3(1);
     }
-    else if (settings == S_3) {
+    else if (settings_fmware == S_3) {
         enable2(1);
     }
-    else if (settings == S_2) {
+    else if (settings_fmware == S_2) {
         enable1(1);
     }
 }
 
 void soh_calc(){
     //Second reading for SOH
-    for (int i = settings; i >= 0; i--) {
+    for (int i = settings_fmware; i >= 0; i--) {
         cell_voltage_UL[i] = readUndividedVoltage(pin_volt_LS[i]);
     }
     float diff;
     //Calculate the difference between the two readings
-    for (int i = settings; i >= 0; i--) {
+    for (int i = settings_fmware; i >= 0; i--) {
         diff = cell_voltage_UL[i] - cell_voltage_OC[i];
         if (diff > max_vol_reading__soh) {
             max_vol_reading__soh = diff;

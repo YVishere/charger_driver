@@ -46,4 +46,7 @@ uint8_t setWiper(WiperWriteCommand wiper, uint8_t value);
 uint8_t dec_wiper(int index);
 uint8_t inc_wiper(int index);
 
+WiperReadCommand index_to_readWiper(int index);
+WiperWriteCommand index_to_writeWiper(int index);
+
 #endif

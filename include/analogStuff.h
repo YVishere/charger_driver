@@ -19,7 +19,7 @@
 
 void initAnalog();
 
-float readVoltage(uint8_t channel);
-float readUndividedVoltage(uint8_t channel);
+float readVoltage(int channel);
+float readUndividedVoltage(int channel);
 
 #endif
