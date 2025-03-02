@@ -54,16 +54,19 @@ typedef enum{
 extern volatile settings_t settings;
 
 // State machine states
+
+#define STATE_TO_INDEX_OFFSET       4
 typedef enum {
     IDLE = 0,
-    VERIFY_SETTINGS = 1,
+    SET_SETTINGS = 1,
     VOC_MEASURE = 2,
     CONST_CURR = 3,
     CONST_VOLT_1S = 4,
     CONST_VOLT_2S = 5,
     CONST_VOLT_3S = 6,
     CONST_VOLT_4S = 7,
-    CHARGED = 8
+    CHARGED = 8,
+    ERROR = 9
 } state_t;
 
 extern volatile state_t state;

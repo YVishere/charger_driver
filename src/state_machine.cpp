@@ -32,7 +32,23 @@ state_t getStateMachineState() {
 void stateMachine() {
     static bool first = true;
     switch (state) {
-        case VERIFY_SETTINGS:
+        case SET_SETTINGS:
+            //Round Robin A2D converting on pins closer to battery
+            if (readVoltage(V_8_HS) > VOLT_THRES) {
+                state = VOC_MEASURE;
+                settings = S_2;
+                events.state_change = 1;
+            }
+            else if (readVoltage(V_12_HS) > VOLT_THRES) {
+                state = VOC_MEASURE;
+                settings = S_3;
+                events.state_change = 1;
+            }
+            else if (readVoltage(V_16_HS) > VOLT_THRES) {
+                state = VOC_MEASURE;
+                settings = S_4;
+                events.state_change = 1;
+            }
         break;
         case VOC_MEASURE:
             // Measure and store away each cell voltage
@@ -63,7 +79,7 @@ void stateMachine() {
 
             //calculate current
             for (int i = settings; i >= 0; i--) {
-                curr_across[i] = -calculateCurrent(readUndividedVoltage(pin_volt_HS[i]), pin_volt_LS[i]);
+                curr_across[i] = -calculateCurrent(readUndividedVoltage(pin_volt_HS[i]), readUndividedVoltage(pin_volt_LS[i]));
             }
 
             for (int i = settings; i >= 0; i--) {
@@ -110,35 +126,155 @@ void stateMachine() {
         break;
         case CONST_VOLT_1S:
             //constant voltage mode
+
+            //measure on outside of resistor
+            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            //measure on inside of resistor
+            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+
+            //calculate current
+            float curr = calculateCurrent(in_vol, out_vol);
+
+            if (curr > 2){
+                //Faulty battery
+                state = ERROR;
+                events.state_change = 1;
+                events.error = 1;
+            }
+
+            if (out_vol > 4.2){
+                dec_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+            else{
+                inc_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+            
+            if (curr < 0.1){
+                state = CONST_VOLT_2S;
+                events.state_change = 1;
+            }
         break;
         case CONST_VOLT_2S:
             //constant voltage mode
+
+            //measure on outside of resistor
+            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            //measure on inside of resistor
+            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+
+            //calculate current
+            float curr = calculateCurrent(in_vol, out_vol);
+
+            if (curr > 2){
+                //Faulty battery
+                state = ERROR;
+                events.state_change = 1;
+                events.error = 1;
+            }
+
+            if (out_vol > 4.2){
+                dec_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+            else{
+                inc_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+
+            if (curr < 0.1){
+                state = CONST_VOLT_3S;
+                events.state_change = 1;
+            }
         break;
         case CONST_VOLT_3S:
             //constant voltage mode
+
+            //measure on outside of resistor
+            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            //measure on inside of resistor
+            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+
+            //calculate current
+            float curr = calculateCurrent(in_vol, out_vol);
+
+            if (curr > 2){
+                //Faulty battery
+                state = ERROR;
+                events.state_change = 1;
+                events.error = 1;
+            }
+
+            if (out_vol > 4.2){
+                dec_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+            else{
+                inc_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+
+            if (curr < 0.1){
+                state = CONST_VOLT_4S;
+                events.state_change = 1;
+            }
         break;
         case CONST_VOLT_4S:
             //constant voltage mode
+
+            //measure on outside of resistor
+            float out_vol = readUndividedVoltage(pin_volt_HS[state - STATE_TO_INDEX_OFFSET]);
+            //measure on inside of resistor
+            float in_vol = readUndividedVoltage(pin_volt_LS[state - STATE_TO_INDEX_OFFSET]);
+
+            //calculate current
+            float curr = calculateCurrent(in_vol, out_vol);
+
+            if (curr > 2){
+                //Faulty battery
+                state = ERROR;
+                events.state_change = 1;
+                events.error = 1;
+            }
+
+            if (out_vol > 4.2){
+                dec_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+            else{
+                inc_wiper(state - STATE_TO_INDEX_OFFSET);
+            }
+
+            if (curr < 0.1){
+                state = CHARGED;
+                events.state_change = 1;
+            }
         break;
         case CHARGED:
-            //Verify if the battery is actually charged
+            //Verify if the battery pack is actually charged
+
+            //If charged, last state
+            //If not, go back to constant voltage 1S
+
+            for (int i = settings; i >= 0; i--) {
+                float out_vol = readUndividedVoltage(pin_volt_HS[i]);
+                float in_vol = readUndividedVoltage(pin_volt_LS[i]);
+                float curr = calculateCurrent(in_vol, out_vol);
+
+                if (curr > 0.1){
+                    state = CONST_VOLT_1S;
+                    events.state_change = 1;
+                    return;
+                }
+            }
+        break;
+        case ERROR:
+            //Error state
+            events.faulty_batt = 1;
         break;
         default:
             //IDLE state
-            //Round Robin A2D converting on pins closer to battery
-            if (readVoltage(V_8_HS) > VOLT_THRES) {
-                state = VERIFY_SETTINGS;
-                settings = S_2;
-                events.state_change = 1;
-            }
-            else if (readVoltage(V_12_HS) > VOLT_THRES) {
-                state = VERIFY_SETTINGS;
-                settings = S_3;
-                events.state_change = 1;
-            }
-            else if (readVoltage(V_16_HS) > VOLT_THRES) {
-                state = VERIFY_SETTINGS;
-                settings = S_4;
+
+            //Check if a battery is connected
+            if (readUndividedVoltage(V_4_HS) > VOLT_THRES
+                    || readUndividedVoltage(V_8_HS) > VOLT_THRES
+                    || readUndividedVoltage(V_12_HS) > VOLT_THRES
+                    || readUndividedVoltage(V_16_HS) > VOLT_THRES) {
+                state = SET_SETTINGS;
                 events.state_change = 1;
             }
         break;
