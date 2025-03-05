@@ -9,15 +9,15 @@
 
 //Digital Pins
 
-#define EN0         PA_12
-#define EN1         PB_0
-#define EN2         PC_14
-#define EN3         PC_15
+#define EN0         PA12
+#define EN1         PB0
+#define EN2         PC14
+#define EN3         PC15
 
-#define SPI_CS      PA_11
-#define SPI_MOSI    PB_5
-#define SPI_MISO    PB_4
-#define SCLK        PB_3
+#define SPI_CS      PA11
+#define SPI_MOSI    PB5
+#define SPI_MISO    PB4
+#define SCLK        PB3
 
 //Analog Pins
 #define A0          ADC_CHANNEL_5
