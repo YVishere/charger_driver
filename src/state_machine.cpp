@@ -178,7 +178,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 4.2){
+            if (out_vol > 4.2 + 0.55){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{
@@ -208,7 +208,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 8.4){
+            if (out_vol > 8.4 + 0.55){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{
@@ -235,7 +235,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 12.6){
+            if (out_vol > 12.6 + 0.55){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{
@@ -265,7 +265,7 @@ void stateMachine() {
                 events.error = 1;
             }
 
-            if (out_vol > 16.8){
+            if (out_vol > 16.8 + 0.55){
                 dec_wiper(state - STATE_TO_INDEX_OFFSET);
             }
             else{

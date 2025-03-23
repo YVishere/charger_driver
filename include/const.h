@@ -3,6 +3,15 @@
 
 #include <Arduino.h>
 
+
+/////////////////////////////
+// Values for consideration
+/////////////////////////////
+#define DIGIPOT_16V_A  3.2941
+#define DIGIPOT_12V_A  3.2812
+#define DIGIPOT_8V_A   3.289
+#define DIGIPOT_4V_A   3.2967
+
 //////////////
 //Pin Macros
 //////////////
