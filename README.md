@@ -1,5 +1,7 @@
 ![image](https://github.com/user-attachments/assets/15af6915-deb3-4c11-b25c-8bdb677fbc0d)
 
+![image](https://github.com/user-attachments/assets/3b8421f9-e8ab-4548-bbe0-d71b86adf60c)
+
 
 Firmware code to be implemented on nucleo L432KC using Arduino libraries through PlatformIO.  
 Part of Directed Study with Professor Hoffman to build a circuit board to implement efficient charging algorithms on lipo batteries.   
